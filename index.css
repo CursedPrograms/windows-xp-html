@@ -1,61 +1,176 @@
-/* Reset some default browser styles */
-body,
-h1,
-h2,
-p,
-ul {
+body, html {
+    height: 100%;
     margin: 0;
     padding: 0;
-}
+    font-family: 'Tahoma', sans-serif;
+    background: url('https://xp-nostalgia.com/images/bliss.jpg') no-repeat center center fixed;
+    background-size: cover;
+    overflow: hidden;
+  }
 
-/* Set a base font size and family */
-body {
-    font-family: 'Arial', sans-serif;
-    font-size: 16px;
-}
+  #desktop {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
 
-/* Style the header */
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 1em;
+  #taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, #2584e5 0%, #0b60c4 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  #start-button {
+    background: url('https://xp-nostalgia.com/images/start-button.png') no-repeat;
+    width: 100px;
+    height: 28px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .icon {
+    width: 50px;
+    height: 50px;
+    position: absolute;
     text-align: center;
-}
+    cursor: pointer;
+  }
 
-header h1 {
-    margin: 0;
-}
+  .icon img {
+    width: 32px;
+    height: 32px;
+  }
 
-nav ul {
-    list-style: none;
-}
+  .icon span {
+    display: block;
+    color: white;
+    text-shadow: 1px 1px 1px black;
+    font-size: 12px;
+    margin-top: 5px;
+  }
 
-nav ul li {
-    display: inline;
-    margin-right: 15px;
-}
+  #my-computer {
+    top: 20px;
+    left: 20px;
+  }
 
-nav a {
-    color: #fff;
-    text-decoration: none;
-}
+  #recycle-bin {
+    top: 100px;
+    left: 20px;
+  }
 
-/* Style the main content area */
-main {
-    padding: 20px;
-}
+  #internet-explorer {
+    top: 180px;
+    left: 20px;
+  }
 
-section {
-    margin-bottom: 20px;
-}
+  .window {
+    position: absolute;
+    width: 400px;
+    height: 300px;
+    background-color: #ECE9D8;
+    border: 1px solid #0054E3;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    display: none;
+  }
 
-/* Style the footer */
-footer {
-    background-color: #333;
-    color: #fff;
+  .window-header {
+    height: 30px;
+    background: linear-gradient(to bottom, #0058E6 0%, #3A93FF 5%, #288CFF 15%, #127CE6 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    cursor: move;
+  }
+
+  .window-title {
+    flex-grow: 1;
+  }
+
+  .window-controls {
+    display: flex;
+  }
+
+  .window-button {
+    width: 24px;
+    height: 22px;
+    background-color: #D1E4FD;
+    border: 1px solid #0058E6;
+    margin-left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .window-content {
     padding: 10px;
-    text-align: center;
-}
+    height: calc(100% - 50px);
+    overflow: auto;
+  }
 
-/* Add additional styling as needed */
+  #start-menu {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    width: 320px;
+    height: 480px;
+    background: linear-gradient(to bottom, #226ebd 0%, #1f62ab 100%);
+    border: 1px solid #084593;
+    display: none;
+    box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.3);
+  }
 
+  .start-header {
+    height: 60px;
+    background-color: #4583c3;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .start-user-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #ffcb66;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  .start-menu-items {
+    padding: 5px;
+  }
+
+  .start-menu-item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .start-menu-item:hover {
+    background-color: #2c77c6;
+  }
+
+  .start-menu-item img {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+  }
+
+  #clock {
+    color: white;
+    margin-left: auto;
+    padding-right: 10px;
+  }
