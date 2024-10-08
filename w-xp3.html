@@ -1,0 +1,423 @@
+<html><head><base href="">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows XP</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Tahoma', sans-serif;
+    overflow: hidden;
+  }
+  #desktop {
+    width: 100%;
+    height: 100%;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/54/Bliss_%28Windows_XP%29.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  #taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, #2584e8 0%, #0f69c9 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 1000;
+  }
+  #start-button {
+    background: linear-gradient(to bottom, #3c9d3c 0%, #1e7b1e 100%);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  #start-button img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+  }
+  .icon {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+  }
+  .icon img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+  }
+  #start-menu {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    width: 320px;
+    background: linear-gradient(to bottom, #3c9d3c 0%, #1e7b1e 100%);
+    border: 1px solid #0f5a0f;
+    border-bottom: none;
+    display: none;
+    z-index: 1001;
+  }
+  .start-item {
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+  }
+  .start-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  .window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background-color: #f0f0f0;
+    border: 1px solid #999;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+  }
+  .title-bar {
+    background: linear-gradient(to bottom, #2584e8 0%, #0f69c9 100%);
+    color: white;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .window-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    overflow: auto;
+  }
+  .close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  #recycle-bin-content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  .deleted-item {
+    width: 70px;
+    height: 70px;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+  }
+  #my-computer-content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  .drive {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+  }
+  #ie-content {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .context-menu {
+    position: absolute;
+    background-color: #f0f0f0;
+    border: 1px solid #999;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    z-index: 1002;
+    display: none;
+  }
+  .context-menu-item {
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .context-menu-item:hover {
+    background-color: #e0e0e0;
+  }
+</style>
+</head>
+<body>
+<div id="desktop">
+  <div class="icon" style="top: 20px; left: 20px;" data-name="My Computer">
+    <img src="https://win98icons.alexmeub.com/icons/png/my_computer-4.png" alt="My Computer icon">
+    <span>My Computer</span>
+  </div>
+  <div class="icon" style="top: 100px; left: 20px;" data-name="Recycle Bin">
+    <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" alt="Recycle Bin icon">
+    <span>Recycle Bin</span>
+  </div>
+  <div class="icon" style="top: 180px; left: 20px;" data-name="Internet Explorer">
+    <img src="https://win98icons.alexmeub.com/icons/png/internet_explorer_6-4.png" alt="Internet Explorer icon">
+    <span>Internet Explorer</span>
+  </div>
+  <div id="taskbar">
+    <button id="start-button">
+      <img src="https://win98icons.alexmeub.com/icons/png/windows_logo-1.png" alt="Windows logo">
+      Start
+    </button>
+  </div>
+  <div id="start-menu">
+    <div class="start-item" data-game="minesweeper">Minesweeper</div>
+    <div class="start-item" data-game="solitaire">Solitaire</div>
+    <div class="start-item" data-game="freecell">FreeCell</div>
+    <div class="start-item" data-game="hearts">Hearts</div>
+    <div class="start-item" data-game="pinball">3D Pinball Space Cadet</div>
+  </div>
+  <div id="game-window" class="window">
+    <div class="title-bar">
+      <span id="game-title"></span>
+      <button class="close-button">×</button>
+    </div>
+    <div id="game-content" class="window-content"></div>
+  </div>
+  <div id="recycle-bin-window" class="window">
+    <div class="title-bar">
+      <span>Recycle Bin</span>
+      <button class="close-button">×</button>
+    </div>
+    <div id="recycle-bin-content" class="window-content"></div>
+  </div>
+  <div id="my-computer-window" class="window">
+    <div class="title-bar">
+      <span>My Computer</span>
+      <button class="close-button">×</button>
+    </div>
+    <div id="my-computer-content" class="window-content"></div>
+  </div>
+  <div id="ie-window" class="window">
+    <div class="title-bar">
+      <span>Internet Explorer</span>
+      <button class="close-button">×</button>
+    </div>
+    <div id="ie-content" class="window-content">
+      <iframe src="https://example.com" width="100%" height="100%"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="context-menu" class="context-menu">
+  <div class="context-menu-item" id="delete-item">Delete</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  const startButton = document.getElementById('start-button');
+  const startMenu = document.getElementById('start-menu');
+  const desktop = document.getElementById('desktop');
+  const gameWindow = document.getElementById('game-window');
+  const gameTitle = document.getElementById('game-title');
+  const gameContent = document.getElementById('game-content');
+  const recycleBinWindow = document.getElementById('recycle-bin-window');
+  const recycleBinContent = document.getElementById('recycle-bin-content');
+  const myComputerWindow = document.getElementById('my-computer-window');
+  const myComputerContent = document.getElementById('my-computer-content');
+  const ieWindow = document.getElementById('ie-window');
+  const contextMenu = document.getElementById('context-menu');
+  const deleteMenuItem = document.getElementById('delete-item');
+
+  let activeIcon = null;
+  let recycleBinItems = [];
+
+  startButton.addEventListener('click', () => {
+    startMenu.style.display = startMenu.style.display === 'none' ? 'block' : 'none';
+  });
+
+  desktop.addEventListener('click', (e) => {
+    if (!e.target.closest('#start-menu') && !e.target.closest('#start-button')) {
+      startMenu.style.display = 'none';
+    }
+
+    if (e.target.closest('.icon')) {
+      const icon = e.target.closest('.icon');
+      if (activeIcon) {
+        activeIcon.style.backgroundColor = 'transparent';
+      }
+      icon.style.backgroundColor = 'rgba(0, 0, 255, 0.3)';
+      activeIcon = icon;
+    } else {
+      if (activeIcon) {
+        activeIcon.style.backgroundColor = 'transparent';
+        activeIcon = null;
+      }
+    }
+
+    contextMenu.style.display = 'none';
+  });
+
+  desktop.addEventListener('dblclick', (e) => {
+    if (e.target.closest('.icon')) {
+      const iconName = e.target.closest('.icon').dataset.name;
+      openWindow(iconName);
+    }
+  });
+
+  desktop.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    if (e.target.closest('.icon')) {
+      activeIcon = e.target.closest('.icon');
+      contextMenu.style.left = `${e.clientX}px`;
+      contextMenu.style.top = `${e.clientY}px`;
+      contextMenu.style.display = 'block';
+    }
+  });
+
+  deleteMenuItem.addEventListener('click', () => {
+    if (activeIcon) {
+      const iconName = activeIcon.dataset.name;
+      if (iconName !== 'Recycle Bin' && iconName !== 'My Computer' && iconName !== 'Internet Explorer') {
+        recycleBinItems.push(iconName);
+        activeIcon.remove();
+        updateRecycleBin();
+      }
+    }
+    contextMenu.style.display = 'none';
+  });
+
+  startMenu.addEventListener('click', (e) => {
+    if (e.target.classList.contains('start-item')) {
+      const game = e.target.dataset.game;
+      gameTitle.textContent = e.target.textContent;
+      gameContent.textContent = `This is where ${e.target.textContent} would be implemented.`;
+      gameWindow.style.display = 'flex';
+      startMenu.style.display = 'none';
+    }
+  });
+
+  function openWindow(name) {
+    switch (name) {
+      case 'Recycle Bin':
+        recycleBinWindow.style.display = 'flex';
+        updateRecycleBin();
+        break;
+      case 'My Computer':
+        myComputerWindow.style.display = 'flex';
+        updateMyComputer();
+        break;
+      case 'Internet Explorer':
+        ieWindow.style.display = 'flex';
+        break;
+      default:
+        alert(`Opening ${name}`);
+    }
+  }
+
+  function updateRecycleBin() {
+    recycleBinContent.innerHTML = '';
+    recycleBinItems.forEach(item => {
+      const deletedItem = document.createElement('div');
+      deletedItem.className = 'deleted-item';
+      deletedItem.innerHTML = `
+        <img src="https://win98icons.alexmeub.com/icons/png/file_deleted-1.png" alt="Deleted file icon" width="32" height="32">
+        <span>${item}</span>
+      `;
+      recycleBinContent.appendChild(deletedItem);
+    });
+  }
+
+  function updateMyComputer() {
+    myComputerContent.innerHTML = '';
+    const drives = ['C:', 'D:'];
+    drives.forEach(drive => {
+      const driveElement = document.createElement('div');
+      driveElement.className = 'drive';
+      driveElement.innerHTML = `
+        <img src="https://win98icons.alexmeub.com/icons/png/hard_disk_drive-4.png" alt="Hard drive icon" width="48" height="48">
+        <span>${drive}</span>
+      `;
+      myComputerContent.appendChild(driveElement);
+    });
+  }
+
+  document.querySelectorAll('.close-button').forEach(button => {
+    button.addEventListener('click', () => {
+      button.closest('.window').style.display = 'none';
+    });
+  });
+
+  // Make windows draggable
+  const windows = document.querySelectorAll('.window');
+  windows.forEach(makeWindowDraggable);
+
+  function makeWindowDraggable(element) {
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    element.addEventListener("mousedown", dragStart);
+    document.addEventListener("mousemove", drag);
+    document.addEventListener("mouseup", dragEnd);
+
+    function dragStart(e) {
+      if (e.target === element || e.target.closest('.title-bar')) {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+        isDragging = true;
+      }
+    }
+
+    function drag(e) {
+      if (isDragging) {
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        xOffset = currentX;
+        yOffset = currentY;
+        setTranslate(currentX, currentY, element);
+      }
+    }
+
+    function setTranslate(xPos, yPos, el) {
+      el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+    }
+
+    function dragEnd(e) {
+      initialX = currentX;
+      initialY = currentY;
+      isDragging = false;
+    }
+  }
+});
+</script>
+</body>
+</html>
