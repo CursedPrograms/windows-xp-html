@@ -1,0 +1,437 @@
+<html><head><base href="https://xp-nostalgia.com/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows XP Experience</title>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Tahoma', sans-serif;
+    background: url('https://xp-nostalgia.com/images/bliss.jpg') no-repeat center center fixed;
+    background-size: cover;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #desktop {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  #taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, #2584e5 0%, #0b60c4 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 2px;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  #start-button {
+    background: url('https://xp-nostalgia.com/images/start-button.png') no-repeat;
+    width: 100px;
+    height: 28px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .icon {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .icon img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .icon span {
+    display: block;
+    color: white;
+    text-shadow: 1px 1px 1px black;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  #my-computer { top: 20px; left: 20px; }
+  #recycle-bin { top: 120px; left: 20px; }
+  #internet-explorer { top: 220px; left: 20px; }
+
+  .window {
+    position: absolute;
+    width: 500px;
+    height: 400px;
+    background-color: #ECE9D8;
+    border: 1px solid #0054E3;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    display: none;
+    resize: both;
+    overflow: auto;
+  }
+
+  .window-header {
+    height: 30px;
+    background: linear-gradient(to bottom, #0058E6 0%, #3A93FF 5%, #288CFF 15%, #127CE6 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    cursor: move;
+  }
+
+  .window-title {
+    flex-grow: 1;
+    font-weight: bold;
+  }
+
+  .window-controls {
+    display: flex;
+  }
+
+  .window-button {
+    width: 22px;
+    height: 22px;
+    background-color: #D1E4FD;
+    border: 1px solid #0058E6;
+    margin-left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 16px;
+  }
+
+  .window-content {
+    padding: 10px;
+    height: calc(100% - 50px);
+    overflow: auto;
+  }
+
+  #start-menu {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    width: 320px;
+    height: 480px;
+    background: linear-gradient(to bottom, #226ebd 0%, #1f62ab 100%);
+    border: 1px solid #084593;
+    display: none;
+    box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .start-header {
+    height: 60px;
+    background-color: #4583c3;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .start-user-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #ffcb66;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  .start-menu-items {
+    padding: 5px;
+  }
+
+  .start-menu-item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .start-menu-item:hover {
+    background-color: #2c77c6;
+  }
+
+  .start-menu-item img {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+  }
+
+  #clock {
+    color: white;
+    margin-left: auto;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .taskbar-item {
+    height: 28px;
+    min-width: 150px;
+    background: linear-gradient(to bottom, #5199e3 0%, #3983d8 100%);
+    margin: 0 2px;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    color: white;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .taskbar-item img {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+  }
+</style>
+</head>
+<body>
+  <div id="desktop">
+    <div class="icon" id="my-computer">
+      <img src="https://xp-nostalgia.com/images/my-computer.png" alt="My Computer icon">
+      <span>My Computer</span>
+    </div>
+    <div class="icon" id="recycle-bin">
+      <img src="https://xp-nostalgia.com/images/recycle-bin.png" alt="Recycle Bin icon">
+      <span>Recycle Bin</span>
+    </div>
+    <div class="icon" id="internet-explorer">
+      <img src="https://xp-nostalgia.com/images/internet-explorer.png" alt="Internet Explorer icon">
+      <span>Internet Explorer</span>
+    </div>
+
+    <div id="my-computer-window" class="window">
+      <div class="window-header">
+        <div class="window-title">My Computer</div>
+        <div class="window-controls">
+          <div class="window-button">_</div>
+          <div class="window-button">□</div>
+          <div class="window-button close-button">×</div>
+        </div>
+      </div>
+      <div class="window-content">
+        <p>Welcome to My Computer! Here you can access your drives and folders.</p>
+        <ul>
+          <li>Local Disk (C:)</li>
+          <li>CD Drive (D:)</li>
+          <li>Control Panel</li>
+          <li>Network Places</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="taskbar">
+      <button id="start-button"></button>
+      <div id="taskbar-items"></div>
+      <div id="clock"></div>
+    </div>
+
+    <div id="start-menu">
+      <div class="start-header">
+        <div class="start-user-icon"></div>
+        <div>User</div>
+      </div>
+      <div class="start-menu-items">
+        <div class="start-menu-item">
+          <img src="https://xp-nostalgia.com/images/internet-explorer-small.png" alt="Internet icon">
+          <span>Internet</span>
+        </div>
+        <div class="start-menu-item">
+          <img src="https://xp-nostalgia.com/images/email-small.png" alt="E-mail icon">
+          <span>E-mail</span>
+        </div>
+        <div class="start-menu-item">
+          <img src="https://xp-nostalgia.com/images/my-documents-small.png" alt="My Documents icon">
+          <span>My Documents</span>
+        </div>
+        <div class="start-menu-item">
+          <img src="https://xp-nostalgia.com/images/my-pictures-small.png" alt="My Pictures icon">
+          <span>My Pictures</span>
+        </div>
+        <div class="start-menu-item">
+          <img src="https://xp-nostalgia.com/images/my-music-small.png" alt="My Music icon">
+          <span>My Music</span>
+        </div>
+        <div class="start-menu-item">
+          <img src="https://xp-nostalgia.com/images/control-panel-small.png" alt="Control Panel icon">
+          <span>Control Panel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const desktop = document.getElementById('desktop');
+    const taskbarItems = document.getElementById('taskbar-items');
+    const windows = {};
+    let activeWindow = null;
+    let zIndex = 1000;
+
+    function createWindow(id, title, content) {
+      const window = document.createElement('div');
+      window.id = id;
+      window.className = 'window';
+      window.innerHTML = `
+        <div class="window-header">
+          <div class="window-title">${title}</div>
+          <div class="window-controls">
+            <div class="window-button">_</div>
+            <div class="window-button">□</div>
+            <div class="window-button close-button">×</div>
+          </div>
+        </div>
+        <div class="window-content">${content}</div>
+      `;
+      desktop.appendChild(window);
+      windows[id] = window;
+
+      const taskbarItem = document.createElement('div');
+      taskbarItem.className = 'taskbar-item';
+      taskbarItem.innerHTML = `<img src="https://xp-nostalgia.com/images/${id}.png" alt="${title} icon"><span>${title}</span>`;
+      taskbarItems.appendChild(taskbarItem);
+
+      window.style.top = `${50 + Math.random() * 100}px`;
+      window.style.left = `${50 + Math.random() * 100}px`;
+
+      makeWindowDraggable(window);
+      makeWindowResizable(window);
+
+      window.addEventListener('mousedown', () => bringToFront(window));
+      taskbarItem.addEventListener('click', () => toggleWindow(window));
+
+      window.querySelector('.close-button').addEventListener('click', () => closeWindow(window, taskbarItem));
+
+      return window;
+    }
+
+    function makeWindowDraggable(window) {
+      const header = window.querySelector('.window-header');
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      header.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - window.offsetLeft;
+        offsetY = e.clientY - window.offsetTop;
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          window.style.left = `${e.clientX - offsetX}px`;
+          window.style.top = `${e.clientY - offsetY}px`;
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    }
+
+    function makeWindowResizable(window) {
+      const resizer = document.createElement('div');
+      resizer.style.width = '10px';
+      resizer.style.height = '10px';
+      resizer.style.background = 'transparent';
+      resizer.style.position = 'absolute';
+      resizer.style.right = '0';
+      resizer.style.bottom = '0';
+      resizer.style.cursor = 'se-resize';
+      window.appendChild(resizer);
+
+      let isResizing = false;
+      let originalWidth, originalHeight, originalX, originalY;
+
+      resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        originalWidth = parseFloat(getComputedStyle(window, null).getPropertyValue('width').replace('px', ''));
+        originalHeight = parseFloat(getComputedStyle(window, null).getPropertyValue('height').replace('px', ''));
+        originalX = e.clientX;
+        originalY = e.clientY;
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isResizing) {
+          const width = originalWidth + (e.clientX - originalX);
+          const height = originalHeight + (e.clientY - originalY);
+          window.style.width = `${width}px`;
+          window.style.height = `${height}px`;
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isResizing = false;
+      });
+    }
+
+    function bringToFront(window) {
+      window.style.zIndex = ++zIndex;
+      activeWindow = window;
+    }
+
+    function toggleWindow(window) {
+      if (window.style.display === 'none') {
+        window.style.display = 'block';
+        bringToFront(window);
+      } else {
+        window.style.display = 'none';
+      }
+    }
+
+    function closeWindow(window, taskbarItem) {
+      window.style.display = 'none';
+      if (taskbarItem) {
+        taskbarItem.remove();
+      }
+    }
+
+    // Desktop icon double-click
+    document.querySelectorAll('.icon').forEach(icon => {
+      icon.addEventListener('dblclick', function() {
+        const windowId = this.id + '-window';
+        let window = windows[windowId];
+        if (!window) {
+          window = createWindow(windowId, this.querySelector('span').textContent, '<p>Window content goes here.</p>');
+        }
+        window.style.display = 'block';
+        bringToFront(window);
+      });
+    });
+
+    // Start button
+    const startButton = document.getElementById('start-button');
+    const startMenu = document.getElementById('start-menu');
+    startButton.addEventListener('click', function() {
+      startMenu.style.display = startMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Close start menu when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!startButton.contains(e.target) && !startMenu.contains(e.target)) {
+        startMenu.style.display = 'none';
+      }
+    });
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      document.getElementById('clock').textContent = time;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();  // Initial call to display time immediately
+  </script>
+</body>
+</html>
