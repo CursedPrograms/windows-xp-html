@@ -17,8 +17,6 @@
 
 # windows-xp-html
 
-Cursed Entertainment 2024
-
 <br>
 <div align="center">
 © Cursed Entertainment
