@@ -1,168 +1,190 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: 'Tahoma', sans-serif;
-    overflow: hidden;
-  }
-  #desktop {
-    width: 100%;
-    height: 100%;
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/54/Bliss_%28Windows_XP%29.jpg');
-    background-size: cover;
-    background-position: center;
-    position: relative;
-  }
-  #taskbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 30px;
-    background: linear-gradient(to bottom, #2584e8 0%, #0f69c9 100%);
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    z-index: 1000;
-  }
-  #start-button {
-    background: linear-gradient(to bottom, #3c9d3c 0%, #1e7b1e 100%);
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-  #start-button img {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-  }
-  .icon {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    cursor: pointer;
-    text-align: center;
-    font-size: 12px;
-  }
-  .icon img {
-    width: 32px;
-    height: 32px;
-    margin-bottom: 5px;
-  }
-  #start-menu {
-    position: fixed;
-    bottom: 30px;
-    left: 0;
-    width: 320px;
-    background: linear-gradient(to bottom, #3c9d3c 0%, #1e7b1e 100%);
-    border: 1px solid #0f5a0f;
-    border-bottom: none;
-    display: none;
-    z-index: 1001;
-  }
-  .start-item {
-    padding: 10px;
-    color: white;
-    cursor: pointer;
-  }
-  .start-item:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  .window {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 400px;
-    background-color: #f0f0f0;
-    border: 1px solid #999;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    display: none;
-    flex-direction: column;
-  }
-  .title-bar {
-    background: linear-gradient(to bottom, #2584e8 0%, #0f69c9 100%);
-    color: white;
-    padding: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .window-content {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    overflow: auto;
-  }
-  .close-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  #recycle-bin-content {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-  }
-  .deleted-item {
-    width: 70px;
-    height: 70px;
-    margin: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 12px;
-  }
-  #my-computer-content {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-  }
-  .drive {
-    width: 100px;
-    height: 100px;
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 14px;
-  }
-  #ie-content {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-  .context-menu {
-    position: absolute;
-    background-color: #f0f0f0;
-    border: 1px solid #999;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    z-index: 1002;
-    display: none;
-  }
-  .context-menu-item {
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  .context-menu-item:hover {
-    background-color: #e0e0e0;
-  }
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Tahoma', sans-serif;
+  overflow: hidden;
+}
+
+#desktop {
+  width: 100%;
+  height: 100%;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/54/Bliss_%28Windows_XP%29.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+#taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(to bottom, #2584e8 0%, #0f69c9 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 1000;
+}
+
+#start-button {
+  background: linear-gradient(to bottom, #3c9d3c 0%, #1e7b1e 100%);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+#start-button img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.icon {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+}
+
+.icon img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 5px;
+}
+
+#start-menu {
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  width: 320px;
+  background: linear-gradient(to bottom, #3c9d3c 0%, #1e7b1e 100%);
+  border: 1px solid #0f5a0f;
+  border-bottom: none;
+  display: none;
+  z-index: 1001;
+}
+
+.start-item {
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.start-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.window {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background-color: #f0f0f0;
+  border: 1px solid #999;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  display: none;
+  flex-direction: column;
+}
+
+.title-bar {
+  background: linear-gradient(to bottom, #2584e8 0%, #0f69c9 100%);
+  color: white;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.window-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  overflow: auto;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+#recycle-bin-content {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+.deleted-item {
+  width: 70px;
+  height: 70px;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+}
+
+#my-computer-content {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+.drive {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+}
+
+#ie-content {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.context-menu {
+  position: absolute;
+  background-color: #f0f0f0;
+  border: 1px solid #999;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1002;
+  display: none;
+}
+
+.context-menu-item {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.context-menu-item:hover {
+  background-color: #e0e0e0;
+}
