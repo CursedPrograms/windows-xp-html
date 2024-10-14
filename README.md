@@ -1,3 +1,6 @@
+[![Twitter: @NorowaretaGemu](https://img.shields.io/badge/X-@NorowaretaGemu-blue.svg?style=flat)](https://x.com/NorowaretaGemu)
+
+<br>
 <a href="https://github.com/CursedPrograms/windows-xp-html/actions/workflows/proof-html.yml">
     <img class="workflow-badge workflow-success" src="https://github.com/CursedPrograms/windows-xp-html/actions/workflows/proof-html.yml/badge.svg" alt="Proof HTML Workflow">
 </a>
