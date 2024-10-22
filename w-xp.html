@@ -1,0 +1,724 @@
+<html><head><base href="https://cdn.jsdelivr.net/" />
+<title>Multiplayer Windows XP Experience</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Tahoma', sans-serif;
+    overflow: hidden;
+    cursor: none;
+  }
+  #desktop {
+    background-image: url('https://i.imgur.com/Zk6TR5k.jpg');
+    background-size: cover;
+    height: 100vh;
+    position: relative;
+  }
+  #taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, #2A6EB8 0%, #3080E7 9%, #2D89EF 18%, #2B85EA 92%, #2A79D1 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 10000;
+  }
+  #start-button {
+    background: url('https://i.imgur.com/jD6vZpY.png') no-repeat;
+    width: 100px;
+    height: 25px;
+    border: none;
+    cursor: pointer;
+  }
+  .icon {
+    width: 64px;
+    height: 64px;
+    margin: 10px;
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 1px black;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 5px;
+  }
+  .window {
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    background-color: #ECE9D8;
+    border: 1px solid #0054E3;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    resize: both;
+    overflow: auto;
+  }
+  .window-header {
+    background: linear-gradient(to right, #0058E6, #3080ED);
+    color: white;
+    padding: 5px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+  }
+  .window-content {
+    padding: 10px;
+    height: calc(100% - 30px);
+    overflow: auto;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #user-list {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  .cursor {
+    position: absolute;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .cursor img {
+    width: 32px;
+    height: 32px;
+  }
+  .cursor .nametag {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .folder-content {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .folder-item {
+    width: 80px;
+    height: 80px;
+    margin: 5px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .folder-item img {
+    max-width: 64px;
+    max-height: 64px;
+  }
+</style>
+</head>
+<body>
+<div id="desktop">
+  <div id="user-list"></div>
+</div>
+<div id="taskbar">
+  <button id="start-button"></button>
+</div>
+
+<script>
+const room = new WebsimSocket();
+
+let zIndex = 1000;
+let notes = [];
+let mediaItems = [];
+
+// Initialize notes and mediaItems from the store
+room.store.get('notes').then(storedNotes => {
+  if (storedNotes) notes = storedNotes;
+});
+room.store.get('mediaItems').then(storedMediaItems => {
+  if (storedMediaItems) mediaItems = storedMediaItems;
+});
+
+// Define these functions at the beginning of the script, after the room initialization
+function renderMediaItems() {
+  return mediaItems.map(item => `
+    <div class="folder-item media-item" data-id="${item.id}">
+      <img src="${item.type.startsWith('image') ? item.url : '/a/04e8c8df-868f-4556-9ca4-ffefb97bfe0c'}" alt="${item.type}">
+      <span>${item.uploader}</span>
+    </div>
+  `).join('');
+}
+
+function updateMediaFolder() {
+  $('.folder-content').html(renderMediaItems());
+}
+
+function openMediaWindow(media) {
+  let content;
+  if (media.type.startsWith('image')) {
+    content = `<img src="${media.url}" alt="Media" style="max-width: 100%; max-height: 100%;">`;
+  } else if (media.type.startsWith('video')) {
+    content = `<video src="${media.url}" controls style="max-width: 100%; max-height: 100%;"></video>`;
+  } else if (media.type.startsWith('audio')) {
+    content = `<audio src="${media.url}" controls></audio>`;
+  }
+  createWindow(media.uploader + "'s Media", content, 150, 150, 400, 300);
+}
+
+function renderNotes() {
+  return notes.map(note => `
+    <div class="folder-item note-item" data-id="${note.id}">
+      <img src="/a/2608525b-cb7e-49b4-8e83-c813c2bf370d" alt="Note">
+      <span>${note.author}</span>
+    </div>
+  `).join('');
+}
+
+function updateNoteFolder() {
+  $('.folder-content').html(renderNotes());
+}
+
+function openNoteWindow(note) {
+  const content = `
+    <textarea readonly style="width: 100%; height: 100%;">${note.content}</textarea>
+  `;
+  createWindow(note.author + "'s Note", content, 200, 200, 300, 200);
+}
+
+// Update the room.onRecordChanged handler
+room.onRecordChanged = (id) => {
+  if (id === 'notes') {
+    room.store.get('notes').then(storedNotes => {
+      if (storedNotes) notes = storedNotes;
+      updateNoteFolder();
+    });
+  } else if (id === 'mediaItems') {
+    room.store.get('mediaItems').then(storedMediaItems => {
+      if (storedMediaItems) mediaItems = storedMediaItems;
+      updateMediaFolder();
+    });
+  } else if (id === 'tranquilslumberSubmissions') {
+    updateSubmissions();
+  }
+};
+
+// Add this function near the top of the script, after the room initialization
+function createIcon(name, iconSrc, onClick) {
+  const iconHtml = `
+    <div class="icon" data-name="${name}">
+      <img src="${iconSrc}" alt="${name}">
+      <span>${name}</span>
+    </div>
+  `;
+  $('#desktop').append(iconHtml);
+  $(`[data-name="${name}"]`).on('click', onClick);
+}
+
+function createCursor(clientId, username) {
+  const cursorHtml = `
+    <div id="cursor-${clientId}" class="cursor">
+      <img src="/a/5b5d6600-880b-4bc4-b90e-3a45d12b89de" alt="Cursor">
+      <div class="nametag">${username}</div>
+    </div>
+  `;
+  $('#desktop').append(cursorHtml);
+}
+
+// Add this function to update cursor positions
+function updateCursorPosition(clientId, x, y) {
+  $(`#cursor-${clientId}`).css({ left: x, top: y });
+}
+
+// Update the room.onPeersChanged function
+room.onPeersChanged = (peers) => {
+  updateUserList();
+  Object.entries(peers).forEach(([clientId, peer]) => {
+    if (!$(`#cursor-${clientId}`).length) {
+      createCursor(clientId, peer.username);
+    }
+  });
+};
+
+// Make sure the updateUserList function is defined
+function updateUserList() {
+  const userListHtml = Object.entries(room.party.peers)
+    .map(([clientId, peer]) => `
+      <div>
+        <img src="${peer.avatarUrl}" alt="${peer.username}" class="user-avatar">
+        ${peer.username}
+      </div>
+    `)
+    .join('');
+  $('#user-list').html(userListHtml);
+}
+
+function createWindow(title, content, left, top, width, height) {
+  const windowId = 'window-' + Date.now();
+  const windowHtml = `
+    <div class="window" id="${windowId}" style="left: ${left}px; top: ${top}px; width: ${width}px; height: ${height}px; z-index: ${zIndex++};">
+      <div class="window-header">
+        <span>${title}</span>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="window-content">${content}</div>
+    </div>
+  `;
+  $('#desktop').append(windowHtml);
+  
+  const $window = $(`#${windowId}`);
+
+  $window.draggable({
+    handle: '.window-header',
+    containment: 'body',
+    start: function() {
+      $(this).css('z-index', zIndex++);
+    }
+  });
+  
+  $window.resizable({
+    minHeight: 100,
+    minWidth: 200,
+  });
+  
+  $window.find('.close-btn').on('click', function() {
+    $window.remove();
+  });
+  
+  return windowId;
+}
+
+// Update the room.onmessage handler
+room.onmessage = (event) => {
+  const data = event.data;
+  switch (data.type) {
+    case 'cursorMove':
+      updateCursorPosition(data.clientId, data.x, data.y);
+      break;
+  }
+};
+
+// Make sure the room.onmousemove and on.click handlers still work
+$(document).on('mousemove', function(e) {
+  room.send({
+    type: 'cursorMove',
+    clientId: room.party.client.id,
+    x: e.pageX,
+    y: e.pageY
+  });
+});
+
+$(document).on('click', function(e) {
+  $('.window').css('z-index', 1000);
+  $(e.target).closest('.window').css('z-index', zIndex++);
+});
+
+// Icon functionalities remain the same
+createIcon('My Computer', '/a/7da5aea7-d44f-4ed9-8a12-53ad00fdeff8', () => {
+  createWindow('My Computer', 'This PC is shared by multiple users!', 50, 50, 300, 200);
+});
+
+createIcon('Notepad', '/a/2608525b-cb7e-49b4-8e83-c813c2bf370d', () => {
+  const windowId = createWindow('Notepad', '<textarea id="notepad-content" style="width: 100%; height: 150px;"></textarea>', 100, 100, 300, 200);
+  $(`#${windowId}`).find('#notepad-content').on('input', function() {
+    $(this).val(sanitizeInput($(this).val()));
+  });
+});
+
+createIcon('Media Folder', '/a/4d0bf6f4-3340-4dbd-9cd8-66ce96c1279d', () => {
+  const content = `
+    <div class="folder-content">
+      ${renderMediaItems()}
+    </div>
+    <hr>
+    <input type="text" id="media-url" placeholder="Enter media URL">
+    <select id="media-type">
+      <option value="image/jpeg">Image (JPEG)</option>
+      <option value="image/png">Image (PNG)</option>
+      <option value="image/gif">Image (GIF)</option>
+      <option value="video/mp4">Video (MP4)</option>
+      <option value="video/webm">Video (WebM)</option>
+      <option value="audio/mpeg">Audio (MP3)</option>
+    </select>
+    <button id="upload-media">Upload Media</button>
+  `;
+  const windowId = createWindow('Media Folder', content, 200, 200, 400, 300);
+  
+  $(`#${windowId}`).find('#upload-media').on('click', function() {
+    const mediaUrl = $(`#${windowId}`).find('#media-url').val();
+    const mediaType = $(`#${windowId}`).find('#media-type').val();
+    if (mediaUrl.trim() !== '') {
+      const media = {
+        id: Date.now(),
+        url: mediaUrl,
+        uploader: room.party.client.username,
+        type: mediaType
+      };
+      room.store.update({
+        id: 'mediaItems',
+        dependencies: { media },
+        updateFunction: (mediaItems) => {
+          if (!mediaItems) mediaItems = [];
+          mediaItems.push(media);
+          return mediaItems;
+        }
+      });
+      updateMediaFolder();
+    }
+  });
+
+  $(`#${windowId}`).on('click', '.media-item', function() {
+    const mediaId = $(this).data('id');
+    const media = mediaItems.find(m => m.id === mediaId);
+    if (media) {
+      openMediaWindow(media);
+    }
+  });
+});
+
+// Add Note Folder icon and functionality
+createIcon('Note Folder', '/a/4d0bf6f4-3340-4dbd-9cd8-66ce96c1279d', () => {
+  const content = `
+    <div class="folder-content">
+      ${renderNotes()}
+    </div>
+    <hr>
+    <textarea id="note-content" placeholder="Enter your note" style="width: 100%; height: 100px;"></textarea>
+    <button id="save-note">Save Note</button>
+  `;
+  const windowId = createWindow('Note Folder', content, 250, 250, 400, 300);
+  
+  $(`#${windowId}`).find('#save-note').on('click', function() {
+    const noteContent = $(`#${windowId}`).find('#note-content').val();
+    if (noteContent.trim() !== '') {
+      const note = {
+        id: Date.now(),
+        content: noteContent,
+        author: room.party.client.username
+      };
+      room.store.update({
+        id: 'notes',
+        dependencies: { note },
+        updateFunction: (notes) => {
+          if (!notes) notes = [];
+          notes.push(note);
+          return notes;
+        }
+      });
+      $(`#${windowId}`).find('#note-content').val('');
+      updateNoteFolder();
+    }
+  });
+
+  $(`#${windowId}`).on('click', '.note-item', function() {
+    const noteId = $(this).data('id');
+    const note = notes.find(n => n.id === noteId);
+    if (note) {
+      openNoteWindow(note);
+    }
+  });
+});
+
+// Updated Webium icon and functionality
+createIcon('Webium', '/a/ff30da7e-3073-4e9f-a3a1-541fa05b618f', () => {
+  const content = `
+    <div style="text-align: center; padding: 20px;">
+      <img src="/a/ff30da7e-3073-4e9f-a3a1-541fa05b618f" alt="Webium" style="width: 100px; height: 100px;">
+      <h2>Webium</h2>
+      <p>A prototype search engine</p>
+      <input type="text" id="webium-search" placeholder="Search or enter a URL" style="width: 80%; padding: 5px;">
+      <button id="webium-search-btn" style="margin-top: 10px;">Search</button>
+      <hr>
+      <h3>Add a Website</h3>
+      <input type="text" id="webium-add-name" placeholder="Website Name" style="width: 80%; padding: 5px; margin-bottom: 5px;">
+      <input type="text" id="webium-add-url" placeholder="Website URL" style="width: 80%; padding: 5px; margin-bottom: 5px;">
+      <textarea id="webium-add-description" placeholder="Website Description" style="width: 80%; padding: 5px; margin-bottom: 5px;"></textarea>
+      <button id="webium-add-btn" style="margin-top: 10px;">Add Website</button>
+      <hr>
+      <div id="webium-results"></div>
+    </div>
+  `;
+  const windowId = createWindow('Webium', content, 150, 150, 500, 500);
+
+  // Add website functionality
+  $(`#${windowId}`).find('#webium-add-btn').on('click', function() {
+    const name = $(`#${windowId}`).find('#webium-add-name').val();
+    const url = $(`#${windowId}`).find('#webium-add-url').val();
+    const description = $(`#${windowId}`).find('#webium-add-description').val();
+    
+    if (name && url) {
+      room.store.update({
+        id: 'webiumSites',
+        dependencies: { name, url, description },
+        updateFunction: (sites) => {
+          if (!sites) sites = [];
+          sites.push({ name, url, description });
+          return sites;
+        }
+      });
+      $(`#${windowId}`).find('#webium-add-name, #webium-add-url, #webium-add-description').val('');
+    }
+  });
+
+  // Updated search functionality
+  $(`#${windowId}`).find('#webium-search-btn').on('click', function() {
+    const query = $(`#${windowId}`).find('#webium-search').val().toLowerCase();
+    room.store.get('webiumSites').then(sites => {
+      if (!sites) sites = [];
+      const results = sites.filter(site => 
+        site.name.toLowerCase().includes(query) || 
+        site.url.toLowerCase().includes(query) || 
+        site.description.toLowerCase().includes(query)
+      );
+      
+      const resultsHtml = results.map(site => `
+        <div>
+          <h4><a href="#" class="webium-site-link" data-name="${site.name}" data-url="${site.url}">${site.name}</a></h4>
+          <p>${site.description}</p>
+          <p>${site.url}</p>
+        </div>
+      `).join('');
+      
+      $(`#${windowId}`).find('#webium-results').html(resultsHtml || 'No results found');
+    });
+  });
+
+  // Add click event for opening websites in new windows
+  $(`#${windowId}`).on('click', '.webium-site-link', function(e) {
+    e.preventDefault();
+    const name = $(this).data('name');
+    const url = $(this).data('url');
+    openWebsiteWindow(name, url);
+  });
+});
+
+// Add this new function to open a website in a new window
+function openWebsiteWindow(name, url) {
+  const content = `
+    <iframe src="${url}" style="width: 100%; height: 100%; border: none;"></iframe>
+  `;
+  createWindow(name, content, 200, 200, 800, 600);
+}
+
+// New "Warning!" folder icon
+createIcon('Warning!', '/a/4d0bf6f4-3340-4dbd-9cd8-66ce96c1279d', () => {
+  const content = `
+    <div style="color: red; font-weight: bold; text-align: center;">
+      <h2>Warning!</h2>
+      <p>Every update means that every note, media, and website will be gone.</p>
+      <p>But don't fret: you can always add another note, media, or upload the same website!</p>
+    </div>
+  `;
+  const windowId = createWindow('Warning!', content, 300, 300, 400, 300);
+  $(`#${windowId}`).find('.window-header').css('background', 'linear-gradient(to right, #FF0000, #FF3333)');
+});
+
+// New Paint application icon and functionality
+createIcon('Paint', '/a/b04eb05b-f8b9-4d60-afbb-1b037676391f', () => {
+  const content = `
+    <canvas id="paint-canvas" width="500" height="400" style="border:1px solid #000000;"></canvas>
+    <div>
+      <input type="color" id="color-picker" value="#000000">
+      <input type="range" id="brush-size" min="1" max="50" value="5">
+      <button id="clear-canvas">Clear</button>
+    </div>
+  `;
+  const windowId = createWindow('Paint', content, 350, 100, 550, 500);
+  initializePaint(windowId);
+});
+
+function initializePaint(windowId) {
+  const canvas = $(`#${windowId}`).find('#paint-canvas')[0];
+  const ctx = canvas.getContext('2d');
+  let painting = false;
+
+  function startPosition(e) {
+    painting = true;
+    draw(e);
+  }
+
+  function endPosition() {
+    painting = false;
+    ctx.beginPath();
+  }
+
+  function draw(e) {
+    if (!painting) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    ctx.lineWidth = $(`#${windowId}`).find('#brush-size').val();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = $(`#${windowId}`).find('#color-picker').val();
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+
+  canvas.addEventListener('mousedown', startPosition);
+  canvas.addEventListener('mouseup', endPosition);
+  canvas.addEventListener('mousemove', draw);
+
+  $(`#${windowId}`).find('#clear-canvas').on('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+}
+
+// New icon for the Wikipedia Page for Cheese
+createIcon('TWPFC', '/a/8af14054-143e-4b5c-83c1-a868aadc801c', () => {
+  const content = `
+    <iframe src="https://en.wikipedia.org/wiki/Cheese" style="width: 100%; height: 100%; border: none;"></iframe>
+  `;
+  createWindow('The Wikipedia Page for Cheese', content, 400, 100, 800, 600);
+});
+
+// Add new icon for "tranquilslumber passion!!!"
+createIcon('tranquilslumber passion!!!', '/a/04e8c8df-868f-4556-9ca4-ffefb97bfe0c', () => {
+  const content = `
+    <div style="text-align: center;">
+      <h2>tranquilslumber passion!!!</h2>
+      <img src="/a/0eefd5de-64c2-48dc-8994-aa057ed56c4a" alt="tranquilslumber OC" style="max-width: 300px; max-height: 300px;">
+      <h3>Known for:</h3>
+      <ul style="list-style-type: none; padding: 0;">
+        <li>Tranquil Generator Engine (Story Generator Engine)</li>
+        <li>mugenmovegen</li>
+        <li>Multiplayer Windows XP Experience</li>
+      </ul>
+      <hr>
+      <h3>Submit Fanart</h3>
+      <input type="text" id="fanart-url" placeholder="Enter fanart URL">
+      <button id="submit-fanart">Submit Fanart</button>
+      <hr>
+      <h3>Submit Story</h3>
+      <textarea id="story-content" placeholder="Write your story here" style="width: 100%; height: 100px;"></textarea>
+      <button id="submit-story">Submit Story</button>
+      <hr>
+      <h3>Submissions</h3>
+      <div id="submissions-container"></div>
+    </div>
+  `;
+  const windowId = createWindow('tranquilslumber passion!!!', content, 100, 50, 500, 500);
+  initializeTransquilslumberPassion(windowId);
+});
+
+function initializeTransquilslumberPassion(windowId) {
+  const $window = $(`#${windowId}`);
+
+  $window.find('#submit-fanart').on('click', function() {
+    const fanartUrl = $window.find('#fanart-url').val();
+    if (fanartUrl.trim() !== '') {
+      submitFanart(fanartUrl);
+      $window.find('#fanart-url').val('');
+    }
+  });
+
+  $window.find('#submit-story').on('click', function() {
+    const storyContent = $window.find('#story-content').val();
+    if (storyContent.trim() !== '') {
+      submitStory(storyContent);
+      $window.find('#story-content').val('');
+    }
+  });
+
+  updateSubmissions();
+}
+
+function submitFanart(url) {
+  room.store.update({
+    id: 'tranquilslumberSubmissions',
+    dependencies: { url, username: room.party.client.username },
+    updateFunction: (submissions) => {
+      if (!submissions) submissions = [];
+      submissions.push({
+        type: 'fanart',
+        url: sanitizeInput(url),
+        author: sanitizeInput(room.party.client.username),
+        timestamp: Date.now()
+      });
+      return submissions;
+    }
+  });
+}
+
+function submitStory(content) {
+  room.store.update({
+    id: 'tranquilslumberSubmissions',
+    dependencies: { content, username: room.party.client.username },
+    updateFunction: (submissions) => {
+      if (!submissions) submissions = [];
+      submissions.push({
+        type: 'story',
+        content: sanitizeInput(content),
+        author: sanitizeInput(room.party.client.username),
+        timestamp: Date.now()
+      });
+      return submissions;
+    }
+  });
+}
+
+function updateSubmissions() {
+  room.store.get('tranquilslumberSubmissions').then(submissions => {
+    if (!submissions) submissions = [];
+    const $container = $('#submissions-container');
+    $container.empty();
+    submissions.forEach(submission => {
+      if (submission.type === 'fanart') {
+        $container.append(`
+          <div>
+            <h4>Fanart by ${submission.author}</h4>
+            <img src="${submission.url}" alt="Fanart" style="max-width: 200px; max-height: 200px;">
+          </div>
+        `);
+      } else if (submission.type === 'story') {
+        $container.append(`
+          <div>
+            <h4>Story by ${submission.author}</h4>
+            <p>${submission.content}</p>
+          </div>
+        `);
+      }
+    });
+  });
+}
+
+// Add sanitization function
+function sanitizeInput(input) {
+  const temp = document.createElement('div');
+  temp.textContent = input;
+  return temp.innerHTML;
+}
+
+// Call necessary functions to ensure data is loaded
+updateUserList();
+updateNoteFolder();
+updateMediaFolder();
+updateSubmissions();
+
+</script>
+</body></html>
